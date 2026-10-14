@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#8055e8">
+  <title>Connectly — Connect with Everyone</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="navbar">
+    <a href="#home" class="logo" aria-label="Connectly home">Connectly<span>.</span></a>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a class="nav-link active" href="#home">Home</a>
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#about">About</a>
+    </nav>
+    <a href="#join" class="nav-button">Join Now <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-content reveal">
+        <p class="tagline"><span class="sparkle">✦</span> YOUR WORLD, YOUR PEOPLE</p>
+        <h1>Connect with people who <span>matter.</span></h1>
+        <p class="description">Share your moments, discover new interests, and stay connected with friends wherever life takes you.</p>
+        <div class="hero-buttons">
+          <a href="#join" class="primary-button">Get Started <span aria-hidden="true">→</span></a>
+          <a href="#features" class="secondary-button"><span class="play-icon">▶</span> Explore Features</a>
+        </div>
+        <p class="community-text"><span>✦</span> A place to share, connect, and belong.</p>
+        <div class="social-proof">
+          <div class="avatar-stack" aria-hidden="true"><span>J</span><span>M</span><span>A</span><span>+</span></div>
+          <p><strong>Join a growing community</strong><br><span>Good people. Great conversations.</span></p>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal">
+        <div class="decor decor-one"></div><div class="decor decor-two"></div>
+        <div class="social-card">
+          <div class="post-header">
+            <div class="avatar avatar-one">A</div>
+            <div><h3>Alex Morgan <span class="verified">✓</span></h3><p>2 hours ago · <span>◎</span> Friends</p></div>
+            <button class="icon-button more" aria-label="More post options" title="More options">•••</button>
+          </div>
+          <div class="post-image" role="img" aria-label="Illustration of a sunset over mountains">
+            <div class="sun"></div><div class="mountain mountain-back"></div><div class="mountain mountain-front"></div>
+            <span class="image-caption">chasing the golden hour</span>
+          </div>
+          <p class="post-copy">Little moments, big memories. 🌄</p>
+          <div class="post-actions">
+            <button class="action-button like-button" aria-pressed="false"><span class="heart">♡</span> <span class="like-count">248</span></button>
+            <button class="action-button comment-button"><span>▢</span> <span>36</span></button>
+            <button class="action-button share-button" aria-label="Share post"><span>↗</span> <span>Share</span></button>
+          </div>
+          <div class="comments-panel" hidden>
+            <p><strong>Jamie:</strong> This view is everything 💜</p>
+            <form class="comment-form"><input aria-label="Write a comment" placeholder="Write a kind comment…" maxlength="140" required><button type="submit" aria-label="Post comment">↑</button></form>
+            <p class="comment-feedback" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="notification" aria-live="polite">
+          <span class="notification-icon">♥</span>
+          <div><strong class="notification-title">New connection!</strong><p class="notification-message">Someone liked your post.</p></div>
+          <button class="notification-close" aria-label="Dismiss notification">×</button>
+        </div>
+        <div class="floating-label"><span class="online-dot"></span> Your people are here</div>
+      </div>
+    </section>
+
+    <section class="features section" id="features">
+      <div class="section-heading reveal">
+        <p class="tagline">WHY CONNECTLY?</p>
+        <h2>Everything social, <span>in one place.</span></h2>
+        <p>Discover simple ways to bring your online community closer.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card reveal"><div class="feature-icon icon-purple">📸</div><h3>Share Moments</h3><p>Post photos, share updates, and let your friends be part of your day.</p><a href="#join" class="feature-link">Share your story <span>→</span></a></article>
+        <article class="feature-card reveal"><div class="feature-icon icon-pink">💬</div><h3>Stay Connected</h3><p>Keep conversations going and catch up with the people you care about.</p><a href="#join" class="feature-link">Start a conversation <span>→</span></a></article>
+        <article class="feature-card reveal"><div class="feature-icon icon-blue">🌎</div><h3>Discover People</h3><p>Meet people with similar interests and find your community.</p><a href="#join" class="feature-link">Find your people <span>→</span></a></article>
+      </div>
+    </section>
+
+    <section class="join-section reveal" id="join">
+      <div class="join-orb orb-left"></div><div class="join-orb orb-right"></div>
+      <p class="tagline">YOUR NEXT CHAPTER STARTS HERE</p>
+      <h2>Your people are waiting.</h2>
+      <p>Start sharing your world with Connectly today.</p>
+      <button class="primary-button join-trigger">Join the Community <span>→</span></button>
+      <div class="join-note">Free to join <span>·</span> Made for real connections</div>
+    </section>
+  </main>
+
+  <footer id="about">
+    <div><a href="#home" class="logo">Connectly<span>.</span></a><p>Bringing people closer, one connection at a time.</p></div>
+    <p class="copyright">© 2026 Connectly. All rights reserved.</p>
+  </footer>
+
+  <dialog class="join-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" aria-label="Close dialog">×</button>
+    <div class="dialog-mark">C<span>.</span></div>
+    <p class="tagline">WELCOME TO CONNECTLY</p>
+    <h2 id="dialog-title">Find your people.</h2>
+    <p class="dialog-description">Join the community and get a little closer to the people and interests you love.</p>
+    <form class="join-form">
+      <label for="join-name">Your name</label><input id="join-name" name="name" placeholder="e.g. Alex Morgan" required maxlength="60">
+      <label for="join-email">Email address</label><input id="join-email" name="email" type="email" placeholder="you@example.com" required>
+      <button class="primary-button" type="submit">Create my invite <span>→</span></button>
+      <p class="form-feedback" aria-live="polite"></p>
+    </form>
+    <p class="fine-print">Demo only — your information is not sent to a server.</p>
+  </dialog>
+  <div class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
