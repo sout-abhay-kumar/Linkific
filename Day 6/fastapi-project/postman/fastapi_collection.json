@@ -1,0 +1,143 @@
+{
+  "info": {
+    "name": "Basic FastAPI API",
+    "description": "Requests for the beginner FastAPI items API. Start the API at http://127.0.0.1:8000 before running these requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "itemId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Welcome",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/"
+          },
+          "response": []
+        },
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "item": [
+        {
+          "name": "List items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/items"
+          },
+          "response": []
+        },
+        {
+          "name": "Create item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Notebook\",\n  \"description\": \"A ruled notebook\",\n  \"price\": 4.99\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/items"
+          },
+          "response": []
+        },
+        {
+          "name": "Get item by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/items/{{itemId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Replace item (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Notebook\",\n  \"description\": \"Replacement details\",\n  \"price\": 5.49\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/items/{{itemId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update item fields (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 6.25\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/items/{{itemId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/items/{{itemId}}"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
