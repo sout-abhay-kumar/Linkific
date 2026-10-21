@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Build
+dist/
+
+# Local configuration
+.env
+!.env.example
+
+# Local database
+backend/papertrail.db
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
