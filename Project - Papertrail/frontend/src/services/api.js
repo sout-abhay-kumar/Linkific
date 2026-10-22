@@ -34,6 +34,7 @@ export const api = {
     });
     return request(`/api/books${query.size ? `?${query.toString()}` : ""}`);
   },
+  getBook: (id) => request(`/api/books/${id}`),
   getStats: () => request("/api/stats"),
   getCategories: () => request("/api/categories"),
   createBook: (book) => request("/api/books", { method: "POST", body: JSON.stringify(book) }),

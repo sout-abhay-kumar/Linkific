@@ -39,6 +39,7 @@ Then open the local URL printed by Vite, normally `http://localhost:5173`.
 The frontend expects these endpoints:
 
 - `GET /api/books?search=&category=&availability=`
+- `GET /api/books/{id}`
 - `GET /api/stats`
 - `GET /api/categories`
 - `POST /api/books`
@@ -64,6 +65,13 @@ src/
     Header.jsx
     Sidebar.jsx
     Stats.jsx
+  pages/
+    About.jsx
+    BookDetails.jsx
+    Books.jsx
+    Contact.jsx
+    Home.jsx
+    NotFound.jsx
   constants.js
   services/api.js
   App.jsx

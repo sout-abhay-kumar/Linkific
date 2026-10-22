@@ -89,6 +89,7 @@ papertrail-complete/
 | Method | Route | Purpose |
 |---|---|---|
 | GET | `/api/books` | List/search/filter books |
+| GET | `/api/books/{id}` | Get one book for its detail page |
 | GET | `/api/stats` | Library statistics |
 | GET | `/api/categories` | Category options |
 | POST | `/api/books` | Create a book |

@@ -62,6 +62,14 @@ def list_books(
     return books
 
 
+@app.get("/api/books/{book_id}", response_model=BookOut)
+def get_book(book_id: int, db: Session = Depends(get_db)):
+    book = db.get(Book, book_id)
+    if book is None:
+        raise HTTPException(status_code=404, detail="Book not found.")
+    return book
+
+
 @app.get("/api/stats", response_model=StatsOut)
 def stats(db: Session = Depends(get_db)):
     books = list(db.scalars(select(Book)).all())

@@ -1,7 +1,6 @@
 import { BookOpen, ChevronDown, Search, X } from "lucide-react";
 import Stats from "./Stats";
 import BookCard from "./BookCard";
-import Footer from "./Footer";
 
 export default function Content({
   stats, books, loading, error, search, setSearch, category, setCategory,
@@ -9,8 +8,7 @@ export default function Content({
   onBorrow, onReturn, onDismissError, onClearFilters
 }) {
   return (
-    <main className="min-w-0 flex-1">
-      <div className="mx-auto max-w-7xl px-5 py-7 md:px-9 md:py-9">
+    <section>
         <section className="mb-7 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
             <p className="text-[10px] font-bold tracking-[.2em] text-[#55745f]">A QUIETER KIND OF COLLECTION</p>
@@ -70,8 +68,6 @@ export default function Content({
             </div>
           )}
         </section>
-        <Footer />
-      </div>
-    </main>
+    </section>
   );
 }
