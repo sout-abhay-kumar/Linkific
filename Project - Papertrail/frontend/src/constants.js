@@ -5,7 +5,7 @@ export const CATEGORIES = [
   "History",
   "Science",
   "Biography",
-  "General"
+  "General",
 ];
 
 export const EMPTY_BOOK = {
@@ -14,5 +14,5 @@ export const EMPTY_BOOK = {
   category: "Fiction",
   published_year: "",
   description: "",
-  total_copies: 1
+  total_copies: 1,
 };

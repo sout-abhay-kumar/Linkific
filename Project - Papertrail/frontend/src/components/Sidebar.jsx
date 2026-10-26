@@ -1,11 +1,18 @@
-import { BookOpen, LibraryBig, BookMarked, House, Info, Mail } from "lucide-react";
+import {
+  BookOpen,
+  LibraryBig,
+  BookMarked,
+  House,
+  Info,
+  Mail,
+} from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navigation = [
   { to: "/", label: "Home", icon: House, end: true },
   { to: "/books", label: "Books", icon: LibraryBig },
   { to: "/about", label: "About", icon: Info },
-  { to: "/contact", label: "Contact", icon: Mail }
+  { to: "/contact", label: "Contact", icon: Mail },
 ];
 
 export default function Sidebar({ totalTitles }) {
@@ -16,31 +23,50 @@ export default function Sidebar({ totalTitles }) {
           <BookOpen size={21} strokeWidth={1.8} />
         </span>
         <span>
-          <span className="block text-lg font-semibold tracking-tight text-stone-900">papertrail</span>
-          <span className="block text-[10px] font-semibold tracking-[.16em] text-stone-500">YOUR PERSONAL LIBRARY</span>
+          <span className="block text-lg font-semibold tracking-tight text-stone-900">
+            papertrail
+          </span>
+          <span className="block text-[10px] font-semibold tracking-[.16em] text-stone-500">
+            YOUR PERSONAL LIBRARY
+          </span>
         </span>
       </NavLink>
 
-      <div className="mt-8 hidden text-[10px] font-bold tracking-[.18em] text-stone-400 md:block">WORKSPACE</div>
-      <nav aria-label="Primary navigation" className="mt-5 flex gap-2 overflow-x-auto pb-1 md:flex-col md:overflow-visible md:pb-0">
+      <div className="mt-8 hidden text-[10px] font-bold tracking-[.18em] text-stone-400 md:block">
+        WORKSPACE
+      </div>
+      <nav
+        aria-label="Primary navigation"
+        className="mt-5 flex gap-2 overflow-x-auto pb-1 md:flex-col md:overflow-visible md:pb-0"
+      >
         {navigation.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
-            className={({ isActive }) => `flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${isActive ? "bg-[#edf2ec] text-[#345744]" : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"}`}
+            className={({ isActive }) =>
+              `flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${isActive ? "bg-[#edf2ec] text-[#345744]" : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"}`
+            }
           >
             <Icon size={17} />
             <span>{label}</span>
-            {to === "/books" && <span className="ml-auto rounded-md bg-white px-2 py-0.5 text-xs text-stone-600">{totalTitles ?? "—"}</span>}
+            {to === "/books" && (
+              <span className="ml-auto rounded-md bg-white px-2 py-0.5 text-xs text-stone-600">
+                {totalTitles ?? "—"}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
 
       <div className="mt-5 hidden rounded-xl border border-stone-200 p-4 md:block">
         <BookMarked size={18} className="text-[#55745f]" />
-        <p className="mt-3 text-sm font-semibold text-stone-800">A little more reading.</p>
-        <p className="mt-1 text-xs leading-5 text-stone-500">Keep your collection organized, one page at a time.</p>
+        <p className="mt-3 text-sm font-semibold text-stone-800">
+          A little more reading.
+        </p>
+        <p className="mt-1 text-xs leading-5 text-stone-500">
+          Keep your collection organized, one page at a time.
+        </p>
       </div>
 
       <div className="mt-auto hidden pt-8 text-xs leading-5 text-stone-400 md:block">

@@ -1,4 +1,7 @@
-const API = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+const API = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(
+  /\/$/,
+  "",
+);
 
 async function request(path, options = {}) {
   let response;
@@ -7,11 +10,13 @@ async function request(path, options = {}) {
       ...options,
       headers: {
         ...(options.body ? { "Content-Type": "application/json" } : {}),
-        ...(options.headers || {})
-      }
+        ...(options.headers || {}),
+      },
     });
   } catch {
-    throw new Error(`Could not connect to the backend at ${API}. Start the FastAPI server and try again.`);
+    throw new Error(
+      `Could not connect to the backend at ${API}. Start the FastAPI server and try again.`,
+    );
   }
 
   if (!response.ok) {
@@ -37,9 +42,11 @@ export const api = {
   getBook: (id) => request(`/api/books/${id}`),
   getStats: () => request("/api/stats"),
   getCategories: () => request("/api/categories"),
-  createBook: (book) => request("/api/books", { method: "POST", body: JSON.stringify(book) }),
-  updateBook: (id, book) => request(`/api/books/${id}`, { method: "PUT", body: JSON.stringify(book) }),
+  createBook: (book) =>
+    request("/api/books", { method: "POST", body: JSON.stringify(book) }),
+  updateBook: (id, book) =>
+    request(`/api/books/${id}`, { method: "PUT", body: JSON.stringify(book) }),
   deleteBook: (id) => request(`/api/books/${id}`, { method: "DELETE" }),
   borrowBook: (id) => request(`/api/books/${id}/borrow`, { method: "POST" }),
-  returnBook: (id) => request(`/api/books/${id}/return`, { method: "POST" })
+  returnBook: (id) => request(`/api/books/${id}/return`, { method: "POST" }),
 };

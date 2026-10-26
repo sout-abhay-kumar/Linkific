@@ -5,7 +5,12 @@ import Content from "../components/Content";
 import { CATEGORIES } from "../constants";
 import { api } from "../services/api";
 
-const EMPTY_STATS = { total_titles: 0, total_copies: 0, available_copies: 0, borrowed_copies: 0 };
+const EMPTY_STATS = {
+  total_titles: 0,
+  total_copies: 0,
+  available_copies: 0,
+  borrowed_copies: 0,
+};
 
 export default function Books() {
   const { refreshLibraryStats } = useOutletContext();
@@ -14,7 +19,10 @@ export default function Books() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [availability, setAvailability] = useState("All");
-  const [categoryOptions, setCategoryOptions] = useState(["All", ...CATEGORIES]);
+  const [categoryOptions, setCategoryOptions] = useState([
+    "All",
+    ...CATEGORIES,
+  ]);
   const [modalBook, setModalBook] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,11 +35,17 @@ export default function Books() {
       const [bookData, statData, categoriesData] = await Promise.all([
         api.getBooks({ search: search.trim(), category, availability }),
         api.getStats(),
-        api.getCategories()
+        api.getCategories(),
       ]);
       setBooks(Array.isArray(bookData) ? bookData : []);
       setStats({ ...EMPTY_STATS, ...statData });
-      setCategoryOptions(["All", ...new Set([...CATEGORIES, ...(Array.isArray(categoriesData) ? categoriesData : [])])]);
+      setCategoryOptions([
+        "All",
+        ...new Set([
+          ...CATEGORIES,
+          ...(Array.isArray(categoriesData) ? categoriesData : []),
+        ]),
+      ]);
     } catch (err) {
       setError(err.message || "Could not load the library.");
     } finally {
@@ -78,7 +92,11 @@ export default function Books() {
     try {
       if (action === "borrow") await api.borrowBook(book.id);
       else await api.returnBook(book.id);
-      setToast(action === "borrow" ? "Book marked as borrowed" : "Book returned successfully");
+      setToast(
+        action === "borrow"
+          ? "Book marked as borrowed"
+          : "Book returned successfully",
+      );
       await reloadAfterChange();
     } catch (err) {
       setError(err.message || "Could not update the book.");
@@ -105,10 +123,29 @@ export default function Books() {
         onBorrow={(book) => bookAction(book, "borrow")}
         onReturn={(book) => bookAction(book, "return")}
         onDismissError={() => setError("")}
-        onClearFilters={() => { setSearch(""); setCategory("All"); setAvailability("All"); }}
+        onClearFilters={() => {
+          setSearch("");
+          setCategory("All");
+          setAvailability("All");
+        }}
       />
-      {modalBook !== undefined && <BookModal key={modalBook?.id ?? "new-book"} book={modalBook} onClose={() => setModalBook(undefined)} onSave={saveBook} />}
-      {toast && <div role="status" className="fixed bottom-5 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-xl bg-stone-900 px-4 py-3 text-sm text-white shadow-lg"><span className="h-2 w-2 rounded-full bg-emerald-400" />{toast}</div>}
+      {modalBook !== undefined && (
+        <BookModal
+          key={modalBook?.id ?? "new-book"}
+          book={modalBook}
+          onClose={() => setModalBook(undefined)}
+          onSave={saveBook}
+        />
+      )}
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-5 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-xl bg-stone-900 px-4 py-3 text-sm text-white shadow-lg"
+        >
+          <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          {toast}
+        </div>
+      )}
     </>
   );
 }
