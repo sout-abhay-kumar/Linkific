@@ -1,0 +1,22 @@
+def longestCommonPrefix(strs):
+    if not strs:
+        return ""
+
+    prefix = strs[0]
+
+    for word in strs[1:]:
+        while not word.startswith(prefix):
+            prefix = prefix[:-1]
+
+            if prefix == "":
+                return ""
+
+    return prefix
+
+
+# Example
+strs = ["flower", "flow", "flight"]
+
+result = longestCommonPrefix(strs)
+
+print("Longest Common Prefix:", result)
