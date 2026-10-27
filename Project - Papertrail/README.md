@@ -1,101 +1,102 @@
-# Papertrail — Complete Book Library
+# Papertrail — Book Library
 
-A minimal, responsive full-stack book library built with React, Tailwind CSS, FastAPI, and SQLite.
+A calm, responsive book library built with React, Tailwind CSS, FastAPI, SQLAlchemy, and PostgreSQL.
 
 ## Features
 
-- Create, read, update, and delete books
-- Borrow and return copies
-- Search by title, author, or category
-- Filter by category and availability
-- Library statistics
-- Responsive layout with reusable React components
-- SQLite persistence
-- FastAPI Swagger docs
+- Public book catalogue, search, filters, and library statistics
+- User signup, login, logout, profile updates, and password changes
+- HttpOnly JWT cookies with CSRF and origin checks
+- Owner-only book creation, updates, deletion, borrowing, and returns
+- Single-use, expiring password-reset tokens
+- Responsive Papertrail interface with accessible form controls
 
-## Requirements
+## Database migration and existing books
 
-- Node.js 18+
-- Python 3.10+
-- Internet connection for first-time npm/pip dependency installation
+The migration in `backend/migrations/001_auth_and_book_ownership.sql` is additive. It creates the `users` and `password_reset_tokens` tables and adds a **nullable** `owner_id` column and foreign key to `books`. It does not update, delete, reassign, or recreate any book rows. Existing books remain unowned (`owner_id IS NULL`), publicly visible, and read-only. New books are assigned to the authenticated user.
 
-## 1. Start the backend
+The application no longer creates or alters tables on import or startup. Review and apply the migration explicitly to the PostgreSQL database configured in `backend/.env`:
 
-Open a terminal:
+1. Keep the existing `.env` and its `DATABASE_URL`; do not replace it with `.env.example`.
+2. Add the auth settings from `backend/.env.example`. Generate a unique secret with `python -c "import secrets; print(secrets.token_urlsafe(48))"` and use the output as `JWT_SECRET_KEY`.
+3. From `backend`, run `python scripts/apply_migration.py`. The script rejects non-PostgreSQL URLs and runs the migration in a transaction.
+4. Back up the database according to your normal operational procedure before applying any schema migration.
 
-```bash
-cd backend
-python -m venv .venv
-```
+The migration is written to be re-runnable. Do not run it against a different database than the one the application uses.
 
-Windows PowerShell:
+## Backend setup
+
+From `backend`, create and activate a virtual environment, then install dependencies:
+
 ```powershell
+python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+```
+
+Configure `DATABASE_URL`, `JWT_SECRET_KEY`, `JWT_ALGORITHM=HS256`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `FRONTEND_URL`, and `ENVIRONMENT` in `backend/.env`. Use `ENVIRONMENT=development` locally and `ENVIRONMENT=production` behind HTTPS. Start the server after applying the migration:
+
+```powershell
 uvicorn app.main:app --reload
 ```
 
-macOS/Linux:
-```bash
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
+The API is available at `http://127.0.0.1:8000`; interactive docs are at `/docs`.
 
-Backend runs at `http://127.0.0.1:8000`. API docs: `http://127.0.0.1:8000/docs`.
+### Password reset email
 
-## 2. Start the frontend
+In development, the reset endpoint returns a one-time reset token to the frontend so the flow can be exercised without an email provider. This response is disabled outside development. For production, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, and (normally) `SMTP_USE_TLS=true`. Without SMTP configured, password-reset requests return a service-unavailable response and never include a token. Reset tokens are stored only as SHA-256 hashes, expire after 30 minutes, and can be used once.
 
-Open a second terminal:
+## Frontend setup
 
-```bash
-cd frontend
+From `frontend`, install packages and start Vite:
+
+```powershell
 npm install
 npm run dev
 ```
 
-Open the URL printed by Vite, usually `http://localhost:5173`.
-
-Optional: copy `frontend/.env.example` to `frontend/.env` if you want to customize `VITE_API_URL`. Restart Vite after changing environment variables.
-
-## Project structure
-
-```text
-papertrail-complete/
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── database.py
-│   │   ├── main.py
-│   │   ├── models.py
-│   │   └── schemas.py
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── services/api.js
-│   │   ├── constants.js
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── package.json
-│   ├── tailwind.config.js
-│   └── vite.config.js
-└── README.md
-```
+Open `http://localhost:5173`. Vite proxies `/api` to the local FastAPI server, keeping browser API requests same-origin during development. `VITE_API_URL` may be set to a different API origin when needed; credentialed cross-origin production deployments must use HTTPS, an exact `FRONTEND_URL` allowlist, and a deployment that permits secure cookies.
 
 ## API routes
 
-| Method | Route | Purpose |
+| Method | Route | Access |
 |---|---|---|
-| GET | `/api/books` | List/search/filter books |
-| GET | `/api/books/{id}` | Get one book for its detail page |
-| GET | `/api/stats` | Library statistics |
-| GET | `/api/categories` | Category options |
-| POST | `/api/books` | Create a book |
-| PUT | `/api/books/{id}` | Update a book |
-| DELETE | `/api/books/{id}` | Delete a book |
-| POST | `/api/books/{id}/borrow` | Borrow one copy |
-| POST | `/api/books/{id}/return` | Return one copy |
+| GET | `/api/auth/csrf` | Public; initializes CSRF cookie |
+| POST | `/api/auth/signup` | Public + CSRF |
+| POST | `/api/auth/login` | Public + CSRF |
+| GET | `/api/auth/me` | Authenticated |
+| POST | `/api/auth/logout` | Authenticated + CSRF |
+| POST | `/api/auth/forgot-password` | Public + CSRF |
+| POST | `/api/auth/reset-password` | Public + CSRF |
+| POST | `/api/auth/change-password` | Authenticated + CSRF |
+| PATCH | `/api/users/me` | Authenticated + CSRF |
+| GET | `/api/books`, `/api/books/{id}` | Public |
+| GET | `/api/stats`, `/api/categories` | Public |
+| POST/PUT/DELETE | `/api/books[/{id}]` | Owner account + CSRF |
+| POST | `/api/books/{id}/borrow` or `/return` | Owner account + CSRF |
 
-The database is created automatically on first backend start.
+Book-changing routes return `404` for books the current user does not own, including legacy unowned entries. Public catalogue responses include an `is_owner` flag for UI controls without exposing user IDs.
+
+## Security notes
+
+- JWTs are only set in HttpOnly cookies; passwords and access tokens are not stored in browser local storage.
+- Unsafe requests require a matching CSRF cookie/header and an allowed `Origin`. CORS credentials are enabled only for configured origins.
+- Local cookies use `SameSite=Lax` without `Secure`; production cookies use `Secure` and `SameSite=None` to support a separately hosted frontend/API. HTTPS is required in production.
+- Logout clears the browser cookie. Since access JWTs are stateless, a copied token can remain usable until its configured expiry; changing or resetting a password increments the user's token version and invalidates outstanding sessions.
+
+## Tests
+
+The backend tests use isolated in-memory SQLite databases; they do not connect to or alter the configured PostgreSQL database:
+
+```powershell
+cd backend
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+Frontend production build:
+
+```powershell
+cd frontend
+npm run build
+```

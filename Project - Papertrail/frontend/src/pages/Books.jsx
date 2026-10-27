@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import BookModal from "../components/BookModal";
 import Content from "../components/Content";
 import { CATEGORIES } from "../constants";
+import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 
 const EMPTY_STATS = {
@@ -14,6 +15,7 @@ const EMPTY_STATS = {
 
 export default function Books() {
   const { refreshLibraryStats } = useOutletContext();
+  const { user } = useAuth();
   const [books, setBooks] = useState([]);
   const [stats, setStats] = useState(EMPTY_STATS);
   const [search, setSearch] = useState("");
@@ -117,7 +119,7 @@ export default function Books() {
         availability={availability}
         setAvailability={setAvailability}
         categoryOptions={categoryOptions}
-        onAdd={() => setModalBook(null)}
+        onAdd={user ? () => setModalBook(null) : undefined}
         onEdit={setModalBook}
         onDelete={deleteBook}
         onBorrow={(book) => bookAction(book, "borrow")}

@@ -194,50 +194,61 @@ export default function BookDetails() {
         </div>
 
         <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="flex flex-wrap gap-3">
-            {available > 0 && (
-              <button
-                type="button"
-                disabled={working}
-                onClick={() => changeAvailability("borrow")}
-                className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <Hand size={16} /> Borrow a copy
-              </button>
-            )}
-            {borrowed > 0 && (
-              <button
-                type="button"
-                disabled={working}
-                onClick={() => changeAvailability("return")}
-                className="btn-secondary disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <RotateCcw size={16} /> Return a copy
-              </button>
-            )}
-            {available === 0 && borrowed === 0 && (
-              <span className="text-sm text-stone-500">
-                No copies are currently available.
-              </span>
-            )}
-          </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className="btn-secondary"
-            >
-              <Pencil size={15} /> Edit
-            </button>
-            <button
-              type="button"
-              disabled={working}
-              onClick={deleteBook}
-              className="inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Trash2 size={15} /> Delete
-            </button>
-          </div>
+          {book.is_owner ? (
+            <>
+              <div className="flex flex-wrap gap-3">
+                {available > 0 && (
+                  <button
+                    type="button"
+                    disabled={working}
+                    onClick={() => changeAvailability("borrow")}
+                    className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <Hand size={16} /> Borrow a copy
+                  </button>
+                )}
+                {borrowed > 0 && (
+                  <button
+                    type="button"
+                    disabled={working}
+                    onClick={() => changeAvailability("return")}
+                    className="btn-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <RotateCcw size={16} /> Return a copy
+                  </button>
+                )}
+                {available === 0 && borrowed === 0 && (
+                  <span className="text-sm text-stone-500">
+                    No copies are currently available.
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(true)}
+                  className="btn-secondary"
+                >
+                  <Pencil size={15} /> Edit
+                </button>
+                <button
+                  type="button"
+                  disabled={working}
+                  onClick={deleteBook}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Trash2 size={15} /> Delete
+                </button>
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-stone-500">
+              This public catalogue entry is read-only.{" "}
+              <Link to="/login" className="font-semibold text-[#47654e] hover:underline">
+                Sign in to manage your own books.
+              </Link>
+            </p>
+          )}
         </div>
       </article>
       {modalOpen && (

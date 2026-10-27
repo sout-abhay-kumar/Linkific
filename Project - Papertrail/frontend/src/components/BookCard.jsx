@@ -11,7 +11,7 @@ export default function BookCard({
 }) {
   const available = Number(book.available_copies || 0);
   const borrowed = Number(book.borrowed_copies || 0);
-  const canManage = Boolean(onEdit || onDelete);
+  const canManage = Boolean(book.is_owner && (onEdit || onDelete));
   return (
     <article className="flex min-w-0 flex-col rounded-2xl border border-stone-200 bg-white p-4 transition hover:border-stone-300 hover:shadow-sm">
       <div className="flex items-start justify-between gap-3">
@@ -20,7 +20,7 @@ export default function BookCard({
         </Link>
         {canManage && (
           <div className="flex gap-1">
-            {onEdit && (
+            {book.is_owner && onEdit && (
               <button
                 onClick={() => onEdit(book)}
                 className="icon-btn"
@@ -30,7 +30,7 @@ export default function BookCard({
                 <Pencil size={15} />
               </button>
             )}
-            {onDelete && (
+            {book.is_owner && onDelete && (
               <button
                 onClick={() => onDelete(book)}
                 className="icon-btn hover:!bg-red-50 hover:!text-red-600"
@@ -75,7 +75,7 @@ export default function BookCard({
             : "All copies borrowed"}
         </div>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-          {onBorrow && available > 0 ? (
+          {book.is_owner && onBorrow && available > 0 ? (
             <button
               onClick={() => onBorrow(book)}
               className="flex items-center gap-1.5 text-xs font-semibold text-[#47654e] hover:text-[#263f2d]"
@@ -92,7 +92,7 @@ export default function BookCard({
               View details <ArrowUpRight size={13} />
             </Link>
           )}
-          {onReturn && borrowed > 0 && (
+          {book.is_owner && onReturn && borrowed > 0 && (
             <button
               onClick={() => onReturn(book)}
               className="flex items-center gap-1 text-xs font-medium text-stone-500 hover:text-stone-900"

@@ -1,4 +1,5 @@
 import { BookOpen, ChevronDown, Search, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import Stats from "./Stats";
 import BookCard from "./BookCard";
@@ -43,13 +44,19 @@ export default function Content({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onAdd}
-          className="btn-primary self-start sm:self-auto"
-        >
-          <span className="text-lg leading-none">+</span> Add a book
-        </button>
+        {onAdd ? (
+          <button
+            type="button"
+            onClick={onAdd}
+            className="btn-primary self-start sm:self-auto"
+          >
+            <span className="text-lg leading-none">+</span> Add a book
+          </button>
+        ) : (
+          <Link to="/login" className="btn-primary self-start sm:self-auto">
+            Sign in to add a book
+          </Link>
+        )}
       </section>
 
       {/* Error message */}
@@ -191,9 +198,15 @@ export default function Content({
                 Clear filters
               </button>
 
-              <button type="button" onClick={onAdd} className="btn-primary">
-                Add a book
-              </button>
+              {onAdd ? (
+                <button type="button" onClick={onAdd} className="btn-primary">
+                  Add a book
+                </button>
+              ) : (
+                <Link to="/login" className="btn-primary">
+                  Sign in to add a book
+                </Link>
+              )}
             </div>
           </div>
         ) : (
