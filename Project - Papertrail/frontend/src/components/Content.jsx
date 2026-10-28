@@ -110,7 +110,7 @@ export default function Content({
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search title, author, category..."
+              placeholder="Search titles..."
               aria-label="Search books"
               className="h-11 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-stone-400"
             />

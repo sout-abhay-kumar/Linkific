@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import or_, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .auth import router as auth_router
@@ -101,17 +101,11 @@ def list_books(
 ):
     statement = select(Book)
 
-    # Search by title, author, or category.
+    # Search by title.
     if search.strip():
         term = f"%{search.strip()}%"
 
-        statement = statement.where(
-            or_(
-                Book.title.ilike(term),
-                Book.author.ilike(term),
-                Book.category.ilike(term),
-            )
-        )
+        statement = statement.where(Book.title.ilike(term))
 
     # Filter by category.
     if category != "All":
