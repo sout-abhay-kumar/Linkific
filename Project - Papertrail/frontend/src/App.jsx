@@ -12,6 +12,8 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import AdminUsers from "./pages/AdminUsers";
+import Unauthorized from "./pages/Unauthorized";
 import {
   ForgotPasswordPage,
   LoginPage,
@@ -19,10 +21,16 @@ import {
   SignupPage,
 } from "./pages/AuthPages";
 
-function RequireAuth({ children }) {
+function RequireAuth({ children, role }) {
   const { user } = useAuth();
   const location = useLocation();
-  return user ? children : <Navigate to="/login" replace state={{ from: location }} />;
+  if (!user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+  if (role && user.role !== role) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+  return children;
 }
 
 function GuestOnly({ children }) {
@@ -107,6 +115,15 @@ export default function App() {
             </RequireAuth>
           }
         />
+        <Route
+          path="admin/users"
+          element={
+            <RequireAuth role="admin">
+              <AdminUsers />
+            </RequireAuth>
+          }
+        />
+        <Route path="unauthorized" element={<Unauthorized />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

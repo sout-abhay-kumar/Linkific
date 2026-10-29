@@ -127,6 +127,7 @@ export default function BookDetails() {
 
   const available = Number(book.available_copies || 0);
   const borrowed = Number(book.borrowed_copies || 0);
+  const canManageBook = book.can_manage ?? book.is_owner;
 
   return (
     <section className="mx-auto max-w-4xl">
@@ -194,7 +195,7 @@ export default function BookDetails() {
         </div>
 
         <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          {book.is_owner ? (
+          {canManageBook ? (
             <>
               <div className="flex flex-wrap gap-3">
                 {available > 0 && (

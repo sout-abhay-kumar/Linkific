@@ -3,11 +3,11 @@ import os
 
 import jwt
 import pytest
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 import app.auth as auth_module
-from app.models import Book, PasswordResetToken
+from app.models import Book, PasswordResetToken, User
 
 
 ORIGIN = "http://localhost:5173"
@@ -198,6 +198,83 @@ def test_only_owner_can_manage_books(client, database):
     assert client.post(f"/api/books/{book_id}/return", headers=csrf_headers(client)).status_code == 200
     updated = client.put(f"/api/books/{book_id}", headers=csrf_headers(client), json={**payload, "title": "Updated"})
     assert updated.status_code == 200
+    assert client.delete(f"/api/books/{book_id}", headers=csrf_headers(client)).status_code == 204
+
+
+def test_regular_user_cannot_access_admin_api_or_assign_admin_role(client):
+    registration = client.post(
+        "/api/auth/signup",
+        headers=csrf_headers(client),
+        json={
+            "full_name": "Reader",
+            "email": "reader@example.com",
+            "password": PASSWORD,
+            "role": "admin",
+        },
+    )
+    assert registration.status_code == 422
+
+    assert signup(client).status_code == 201
+    assert client.get("/api/auth/me").json()["role"] == "user"
+    assert client.get("/api/admin/users").status_code == 403
+    assert (
+        client.patch(
+            "/api/users/me",
+            headers=csrf_headers(client),
+            json={"role": "admin"},
+        ).status_code
+        == 422
+    )
+
+
+def test_admin_can_list_users_and_manage_other_users_books(client, database):
+    with client.__class__(client.app) as owner_client:
+        owner_signup = signup(owner_client, email="owner@example.com", full_name="Owner")
+        assert owner_signup.status_code == 201
+        book_id = add_book(database, owner_id=owner_signup.json()["id"])
+
+    admin = signup(client, email="admin@example.com", full_name="Admin")
+    assert admin.status_code == 201
+    with Session(database) as db:
+        db.execute(
+            update(User)
+            .where(User.id == admin.json()["id"])
+            .values(role="admin")
+        )
+        db.commit()
+        db.expire_all()
+
+    csrf_headers(client)
+    assert client.get("/api/auth/me").json()["role"] == "admin"
+    users_response = client.get("/api/admin/users")
+    assert users_response.status_code == 200
+    assert {user["email"] for user in users_response.json()} == {
+        "owner@example.com",
+        "admin@example.com",
+    }
+    assert all("hashed_password" not in user for user in users_response.json())
+
+    book_list = client.get("/api/books").json()
+    admin_view = next(book for book in book_list if book["id"] == book_id)
+    assert admin_view["is_owner"] is False
+    assert admin_view["can_manage"] is True
+    updated = client.put(
+        f"/api/books/{book_id}",
+        headers=csrf_headers(client),
+        json={
+            "title": "Admin Updated",
+            "author": "Owner",
+            "category": "Fiction",
+            "published_year": None,
+            "description": "",
+            "total_copies": 1,
+        },
+    )
+    assert updated.status_code == 200
+    assert updated.json()["is_owner"] is False
+    assert updated.json()["can_manage"] is True
+    assert client.post(f"/api/books/{book_id}/borrow", headers=csrf_headers(client)).status_code == 200
+    assert client.post(f"/api/books/{book_id}/return", headers=csrf_headers(client)).status_code == 200
     assert client.delete(f"/api/books/{book_id}", headers=csrf_headers(client)).status_code == 204
 
 

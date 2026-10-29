@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .auth import router as auth_router
+from .admin import router as admin_router
 from .database import Base, engine, get_db
 from .models import Book, User
 from .schemas import BookInput, BookOut, StatsOut
@@ -51,6 +52,7 @@ app.add_middleware(
 # --------------------------------------------------
 
 app.include_router(auth_router)
+app.include_router(admin_router)
 
 
 # --------------------------------------------------
@@ -63,6 +65,9 @@ def book_response(book: Book, user: User | None) -> BookOut:
     result.is_owner = (
         user is not None
         and book.owner_id == user.id
+    )
+    result.can_manage = user is not None and (
+        user.role == "admin" or book.owner_id == user.id
     )
 
     return result
@@ -267,7 +272,10 @@ def update_book(
     book = db.get(Book, book_id)
 
     # Only the owner can update their book.
-    if book is None or book.owner_id != user.id:
+    if book is None or (
+        book.owner_id != user.id
+        and user.role != "admin"
+    ):
         raise HTTPException(
             status_code=404,
             detail="Book not found.",
@@ -309,7 +317,10 @@ def delete_book(
     book = db.get(Book, book_id)
 
     # Only the owner can delete their book.
-    if book is None or book.owner_id != user.id:
+    if book is None or (
+        book.owner_id != user.id
+        and user.role != "admin"
+    ):
         raise HTTPException(
             status_code=404,
             detail="Book not found.",
@@ -340,7 +351,10 @@ def borrow_book(
     book = db.get(Book, book_id)
 
     # Only the owner can manage borrowing in this implementation.
-    if book is None or book.owner_id != user.id:
+    if book is None or (
+        book.owner_id != user.id
+        and user.role != "admin"
+    ):
         raise HTTPException(
             status_code=404,
             detail="Book not found.",
@@ -377,7 +391,10 @@ def return_book(
     book = db.get(Book, book_id)
 
     # Only the owner can manage borrowing in this implementation.
-    if book is None or book.owner_id != user.id:
+    if book is None or (
+        book.owner_id != user.id
+        and user.role != "admin"
+    ):
         raise HTTPException(
             status_code=404,
             detail="Book not found.",

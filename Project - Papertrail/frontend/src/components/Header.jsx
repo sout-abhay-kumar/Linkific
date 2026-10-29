@@ -8,6 +8,7 @@ const pageNames = {
   "/about": "About",
   "/contact": "Contact",
   "/profile": "Profile",
+  "/admin/users": "Users",
 };
 
 export default function Header() {
@@ -15,7 +16,9 @@ export default function Header() {
   const { user } = useAuth();
   const currentPage = pathname.startsWith("/books/")
     ? "Book details"
-    : pageNames[pathname] || "Library";
+    : pathname.startsWith("/admin/")
+      ? "Users"
+      : pageNames[pathname] || "Library";
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-stone-200 bg-[#f7f4ed]/90 px-5 backdrop-blur md:px-9">

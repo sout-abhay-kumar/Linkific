@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
 
 
@@ -35,6 +37,7 @@ class BookOut(BaseModel):
     borrowed_copies: int
     available_copies: int
     is_owner: bool = False
+    can_manage: bool = False
 
 
 class StatsOut(BaseModel):
@@ -45,6 +48,8 @@ class StatsOut(BaseModel):
 
 
 class SignupInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     full_name: str = Field(min_length=1, max_length=120)
     email: EmailStr
     password: str = Field(min_length=12, max_length=128)
@@ -88,12 +93,15 @@ class UserOut(BaseModel):
     id: int
     full_name: str
     email: EmailStr
+    role: Literal["user", "admin"]
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class ProfileUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     full_name: str | None = Field(default=None, min_length=1, max_length=120)
     email: EmailStr | None = None
 

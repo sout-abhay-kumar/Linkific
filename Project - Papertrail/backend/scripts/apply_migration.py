@@ -13,8 +13,13 @@ if not database_url.startswith(("postgresql://", "postgresql+psycopg://")):
 if database_url.startswith("postgresql+psycopg://"):
     database_url = database_url.replace("postgresql+psycopg://", "postgresql://", 1)
 
-migration = BACKEND_DIR / "migrations" / "001_auth_and_book_ownership.sql"
-with psycopg.connect(database_url, autocommit=True) as connection:
-    connection.execute(migration.read_text(encoding="utf-8"), prepare=False)
+migrations = sorted((BACKEND_DIR / "migrations").glob("*.sql"))
+if not migrations:
+    raise RuntimeError("No SQL migrations were found.")
 
-print("Authentication and ownership migration applied.")
+with psycopg.connect(database_url, autocommit=True) as connection:
+    for migration in migrations:
+        connection.execute(migration.read_text(encoding="utf-8"), prepare=False)
+        print(f"Applied {migration.name}.")
+
+print("Database migrations applied.")

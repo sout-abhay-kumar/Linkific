@@ -128,6 +128,7 @@ export const api = {
       body: JSON.stringify(credentials),
     }),
   getCurrentUser: () => request("/api/auth/me"),
+  getAdminUsers: () => request("/api/admin/users"),
   logout: async () => {
     await request("/api/auth/logout", { method: "POST" });
     csrfToken = "";

@@ -5,8 +5,10 @@ import {
   House,
   Info,
   Mail,
+  ShieldCheck,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const navigation = [
   { to: "/", label: "Home", icon: House, end: true },
@@ -16,6 +18,11 @@ const navigation = [
 ];
 
 export default function Sidebar({ totalTitles }) {
+  const { user } = useAuth();
+  const visibleNavigation = user?.role === "admin"
+    ? [...navigation, { to: "/admin/users", label: "Users", icon: ShieldCheck }]
+    : navigation;
+
   return (
     <aside className="flex w-full flex-col border-b border-stone-200 bg-white px-5 py-4 md:min-h-screen md:w-64 md:border-b-0 md:border-r md:px-6 md:py-7">
       <NavLink to="/" end className="flex items-center gap-3 no-underline">
@@ -39,7 +46,7 @@ export default function Sidebar({ totalTitles }) {
         aria-label="Primary navigation"
         className="mt-5 flex gap-2 overflow-x-auto pb-1 md:flex-col md:overflow-visible md:pb-0"
       >
-        {navigation.map(({ to, label, icon: Icon, end }) => (
+        {visibleNavigation.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}

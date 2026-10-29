@@ -132,6 +132,15 @@ def get_current_user(user: User | None = Depends(get_optional_current_user)) -> 
     return user
 
 
+def get_admin_user(user: User = Depends(get_current_user)) -> User:
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Administrator access is required.",
+        )
+    return user
+
+
 def set_auth_cookie(response: Response, user: User) -> None:
     response.set_cookie(
         key=AUTH_COOKIE_NAME,
