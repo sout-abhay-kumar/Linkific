@@ -2,23 +2,17 @@
 
 FastAPI, SQLAlchemy, and PostgreSQL backend for the Papertrail book library.
 
-See the project [README](../README.md) for the additive database migration, environment setup, auth/API behavior, SMTP configuration, and test instructions.
+For the full environment-variable reference, first-run database initialization, migration order, API endpoints, Docker instructions, and tests, see the project [README](../README.md) and [API documentation](../docs/API_DOCUMENTATION.md).
 
 ## Run locally
 
-From this directory, create and activate a virtual environment:
+Create `backend/.env` using the variable names and safe local setup described in the project README. No backend `.env.example` is currently provided. From this directory:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-Keep the existing `.env` and its PostgreSQL `DATABASE_URL`. Add the authentication variables from `.env.example`, generate a unique `JWT_SECRET_KEY`, review and apply the migration, then start FastAPI:
-
-```powershell
-python scripts/apply_migration.py
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-The migration adds auth tables and a nullable owner reference without changing existing book records. It is not applied automatically at startup.
+The application creates missing tables at startup. The explicit PostgreSQL migrations are still needed to upgrade an existing database schema; follow the project README for the required order, especially on a new database where the base `books` table must exist before applying the migrations.

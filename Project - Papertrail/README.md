@@ -1,33 +1,186 @@
 # Papertrail — Book Library
 
-A calm, responsive book library built with React, Tailwind CSS, FastAPI, SQLAlchemy, and PostgreSQL.
+Papertrail is a full-stack book-library application for browsing and managing a shared catalogue. The React interface communicates with a FastAPI API backed by PostgreSQL. Signed-in users can manage books they own; administrators can manage all books and view user accounts.
 
-## Features
+## Project overview
 
-- Public book catalogue, search, filters, and library statistics
-- User signup, login, logout, profile updates, and password changes
-- HttpOnly JWT cookies with CSRF and origin checks
-- Owner-only book creation, updates, deletion, borrowing, and returns
-- Admin/User roles with an admin-only user list and cross-owner book management
-- Single-use, expiring password-reset tokens
-- Responsive Papertrail interface with accessible form controls
+### Current features
 
-## Database migration and existing books
+- Browse, search by title, and filter the public catalogue by category and availability.
+- View book details and library-wide title, copy, availability, and borrowing totals.
+- Register, sign in/out, update account details, change a password, and use the password-reset flow.
+- Create, edit, delete, borrow, and return books as an owner; administrators can manage any book.
+- Use an administrator-only users listing.
+- Protect authenticated browser requests with HttpOnly JWT cookies, CSRF checks, and origin validation.
+- Responsive interface built with React and Tailwind CSS.
 
-The migrations in `backend/migrations/` are additive. `001_auth_and_book_ownership.sql` creates the `users` and `password_reset_tokens` tables and adds a **nullable** `owner_id` column and foreign key to `books`. It does not update, delete, reassign, or recreate any book rows. Existing books remain unowned (`owner_id IS NULL`), publicly visible, and read-only. New books are assigned to the authenticated user. `002_add_user_roles.sql` adds the `role` column with a `user` default and a constraint limiting roles to `user` and `admin`; existing user rows receive the `user` default.
+### Technology
 
-The application no longer creates or alters tables on import or startup. Review and apply the migration explicitly to the PostgreSQL database configured in `backend/.env`:
+| Area | Technology |
+|---|---|
+| Frontend | React 18, JavaScript, Vite 6, Tailwind CSS 3, React Router |
+| Backend | Python, FastAPI, Uvicorn |
+| Data | PostgreSQL, SQLAlchemy 2, Psycopg 3 |
+| Validation | Pydantic |
+| Authentication | JWT in HttpOnly cookies; Argon2 password hashing |
+| Containerization | Backend Dockerfile (`python:3.13-slim`) |
 
-1. Keep the existing `.env` and its `DATABASE_URL`; do not replace it with `.env.example`.
-2. Add the auth settings from `backend/.env.example`. Generate a unique secret with `python -c "import secrets; print(secrets.token_urlsafe(48))"` and use the output as `JWT_SECRET_KEY`.
-3. From `backend`, run `python scripts/apply_migration.py`. The script rejects non-PostgreSQL URLs and applies the numbered SQL migrations in order, each in a transaction. The migrations are designed to be re-runnable.
-4. Back up the database according to your normal operational procedure before applying any schema migration.
+The lockfile resolves Vite 6.4.5, which declares support for Node.js 18, 20, and 22 or later. Python 3.10+ is needed for the source's union type syntax; the backend Dockerfile uses Python 3.13. The repository does not pin a PostgreSQL version.
 
-Do not run the migrations against a different database than the one the application uses.
+## Screenshots
 
-### Admin account setup
+No application screenshots are currently present in the repository. No images are embedded here, and no placeholder screenshots have been created. Capture genuine screenshots after running the application and save them in `screenshots/`, for example:
 
-Public registration always creates a `user` account and rejects any submitted `role` field. To promote an account to administrator, first register it, then have an operator with PostgreSQL access run:
+| Page | Suggested file |
+|---|---|
+| Home / library overview | `screenshots/home.png` |
+| Book catalogue | `screenshots/books.png` |
+| Sign in | `screenshots/login.png` |
+| Sign up | `screenshots/signup.png` |
+| Profile | `screenshots/profile.png` |
+| Admin users (admin account required) | `screenshots/admin-users.png` |
+
+There is no separate page named Dashboard; the home page at `/` is the library overview. Add Markdown image links here once screenshots have been captured.
+
+## Project structure
+
+```text
+Project - Papertrail/
+├── backend/
+│   ├── app/
+│   │   ├── main.py                 # FastAPI app, catalogue, book, stats, and category routes
+│   │   ├── auth.py                 # Authentication, profile, and password-reset routes
+│   │   ├── admin.py                # Administrator user-list route
+│   │   ├── models.py               # SQLAlchemy User, Book, and PasswordResetToken models
+│   │   ├── schemas.py              # Pydantic request and response models
+│   │   ├── database.py             # PostgreSQL engine, session, and declarative base
+│   │   └── security.py             # JWT cookies, CSRF/origin checks, and access control
+│   ├── migrations/                 # Additive PostgreSQL SQL migrations
+│   ├── scripts/apply_migration.py  # Applies numbered SQL migrations
+│   ├── tests/                      # Pytest backend tests
+│   ├── Dockerfile                  # Backend image definition
+│   ├── requirements.txt
+│   └── requirements-dev.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/             # Shared book, navigation, layout, and statistics UI
+│   │   ├── pages/                  # Home, books, auth, profile, admin, and informational pages
+│   │   ├── context/AuthContext.jsx # Current-user and authentication state
+│   │   ├── services/api.js         # Credentialed API client and CSRF handling
+│   │   ├── App.jsx                 # Client-side routes and route guards
+│   │   ├── constants.js
+│   │   └── index.css
+│   ├── .env.example                # VITE_API_URL example (empty for local proxy)
+│   ├── package.json
+│   └── vite.config.js              # Vite server and local API proxy
+├── docs/
+│   └── API_DOCUMENTATION.md
+├── screenshots/                    # Add captured screenshots here
+├── .gitignore
+└── README.md
+```
+
+The frontend has no separate `hooks/` or `utils/` directory. Application UI components are in `frontend/src/components/`, route views in `frontend/src/pages/`, and API calls in `frontend/src/services/api.js`. The backend's routes are grouped in `main.py`, `auth.py`, and `admin.py`.
+
+## Prerequisites
+
+- Git.
+- Node.js 18, 20, or 22+ and npm.
+- Python 3.10+ (Python 3.13 is used by the backend Dockerfile).
+- A running PostgreSQL server and permission to create a database and role.
+- Docker Desktop or Docker Engine only if running the backend container.
+
+Verify installed versions with `node --version`, `npm --version`, `python --version`, and `psql --version`. The repository does not pin Node.js or PostgreSQL versions.
+
+## Installation and local setup
+
+### 1. Clone the repository
+
+From PowerShell:
+
+```powershell
+git clone https://github.com/sout-abhay-kumar/Linkific.git
+Set-Location 'Linkific\Project - Papertrail'
+```
+
+Use your repository URL if this project is hosted elsewhere.
+
+### 2. Create a PostgreSQL database
+
+For example, connect to PostgreSQL as an administrator and create a local role and database. Replace the sample password with your own; do not commit it:
+
+```sql
+CREATE USER papertrail WITH PASSWORD 'replace-with-a-local-password';
+CREATE DATABASE papertrail OWNER papertrail;
+```
+
+### 3. Configure the backend environment
+
+There is no `backend/.env.example` in the repository. Create `backend/.env` locally with the settings below. This file is ignored by Git.
+
+```dotenv
+DATABASE_URL=postgresql+psycopg://papertrail:replace-with-a-local-password@localhost:5432/papertrail
+JWT_SECRET_KEY=replace-with-a-generated-secret
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+ENVIRONMENT=development
+FRONTEND_URL=http://localhost:5173
+```
+
+Generate a secret locally, then paste its output as `JWT_SECRET_KEY` (the application requires at least 32 bytes):
+
+```powershell
+python -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+
+`JWT_ALGORITHM` must be `HS256`; `ACCESS_TOKEN_EXPIRE_MINUTES` must be a positive integer. `FRONTEND_URL` is the allowed frontend origin and can contain comma-separated origins. For password-reset email outside development, configure `SMTP_HOST`, `SMTP_PORT` (defaults to `587`), `SMTP_FROM_EMAIL`, and, as appropriate, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `SMTP_USE_TLS` (defaults to `true`). Do not put real credentials in documentation or commit `.env`.
+
+### 4. Install and initialize the backend
+
+```powershell
+Set-Location backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+The FastAPI application calls SQLAlchemy `create_all()` at startup. For a new, empty database, start it once so the base tables (including `books`) are created, then stop it with Ctrl+C and apply the additive migrations:
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+In another step after stopping the server:
+
+```powershell
+python scripts/apply_migration.py
+```
+
+Start the backend again:
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+If using an existing PostgreSQL database that already has the `books` table, apply the migrations before starting the API. The migration script requires PostgreSQL, applies `backend/migrations/*.sql` in filename order, and the SQL is written to be re-runnable. Back up an existing database before changing its schema. The migrations add authentication/ownership and roles; they do not reassign existing books. Legacy books remain publicly visible but are unowned and read-only to regular users; administrators can manage them.
+
+The API listens at `http://127.0.0.1:8000`. FastAPI Swagger UI is at `http://127.0.0.1:8000/docs`; OpenAPI JSON is at `http://127.0.0.1:8000/openapi.json`. The separate endpoint reference is [docs/API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md).
+
+### 5. Install and run the frontend
+
+In a second PowerShell window opened at `Project - Papertrail/`:
+
+```powershell
+Set-Location frontend
+npm ci
+npm run dev
+```
+
+Open `http://localhost:5173`. In local development, Vite proxies `/api` requests to `http://127.0.0.1:8000`; leave `VITE_API_URL` empty as shown in `frontend/.env.example`. For a different API origin, set `VITE_API_URL` and configure the backend's `FRONTEND_URL` and credentialed CORS accordingly.
+
+## Administrator account
+
+Public signup always creates a regular `user` account; there is no public role-promotion endpoint. To promote an account, register it first, then have a trusted operator run this SQL against the configured PostgreSQL database:
 
 ```sql
 UPDATE users
@@ -35,84 +188,60 @@ SET role = 'admin'
 WHERE email = lower('admin@example.com');
 ```
 
-Replace the example address with the intended account. Do not expose this database operation through the public API. The user must sign out and sign back in for the frontend to receive the updated role.
+Replace the example email with the intended account. Sign out and sign back in to refresh the role in the frontend. Administrators retain regular-user permissions and can manage any book and list users.
 
-Admins can use the Users page and list users through `GET /api/admin/users`. Admins retain regular-user permissions and can also manage any book; regular users can only manage their own books. Authorization is checked against the current database user on each protected API request. The React route and navigation checks only control the interface and do not replace backend authorization.
+## Security and production notes
 
-## Backend setup
+- Passwords are hashed with Argon2. JWT access tokens are stored in HttpOnly cookies, not browser local storage.
+- Unsafe API requests require a matching CSRF cookie/header and an allowed `Origin`.
+- In production, the auth cookie is `Secure` and uses `SameSite=None` for a separately hosted frontend/API. Serve the application over HTTPS and configure the exact frontend origin in `FRONTEND_URL`.
+- Signing out clears the browser cookie. Password changes and resets increment the user's token version, invalidating outstanding tokens; otherwise, a copied stateless token remains usable until it expires.
+- Password-reset tokens are stored as SHA-256 hashes, expire after 30 minutes, and are single-use.
+- The Contact page currently contains static SQLite wording, while the backend connects through PostgreSQL `DATABASE_URL`; its displayed `hello@papertrail.local` address is also not confirmed as a working support address. These application strings were not changed as part of this documentation update.
 
-From `backend`, create and activate a virtual environment, then install dependencies:
+## Docker
+
+The repository includes a Dockerfile for the backend only; there is no Docker Compose file or frontend container definition.
+
+From `backend/`, build the image:
 
 ```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+docker build -t papertrail-api .
 ```
 
-Configure `DATABASE_URL`, `JWT_SECRET_KEY`, `JWT_ALGORITHM=HS256`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `FRONTEND_URL`, and `ENVIRONMENT` in `backend/.env`. Use `ENVIRONMENT=development` locally and `ENVIRONMENT=production` behind HTTPS. Start the server after applying the migration:
+After creating `backend/.env`, run the API:
 
 ```powershell
-uvicorn app.main:app --reload
+docker run --rm --name papertrail-api -p 8000:8000 --env-file .env papertrail-api
 ```
 
-The API is available at `http://127.0.0.1:8000`; interactive docs are at `/docs`.
+The database URL must be reachable from inside the container. With PostgreSQL running on the Docker host, use `host.docker.internal` instead of `localhost` in the container's `DATABASE_URL` on Docker Desktop. The image contains the application but not the migration script; apply migrations from the backend environment on the host when an existing database needs them. Startup still runs SQLAlchemy `create_all()`.
 
-### Password reset email
+## Tests and production build
 
-In development, the reset endpoint returns a one-time reset token to the frontend so the flow can be exercised without an email provider. This response is disabled outside development. For production, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, and (normally) `SMTP_USE_TLS=true`. Without SMTP configured, password-reset requests return a service-unavailable response and never include a token. Reset tokens are stored only as SHA-256 hashes, expire after 30 minutes, and can be used once.
-
-## Frontend setup
-
-From `frontend`, install packages and start Vite:
+Backend tests use pytest:
 
 ```powershell
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173`. Vite proxies `/api` to the local FastAPI server, keeping browser API requests same-origin during development. `VITE_API_URL` may be set to a different API origin when needed; credentialed cross-origin production deployments must use HTTPS, an exact `FRONTEND_URL` allowlist, and a deployment that permits secure cookies.
-
-## API routes
-
-| Method | Route | Access |
-|---|---|---|
-| GET | `/api/auth/csrf` | Public; initializes CSRF cookie |
-| POST | `/api/auth/signup` | Public + CSRF |
-| POST | `/api/auth/login` | Public + CSRF |
-| GET | `/api/auth/me` | Authenticated |
-| GET | `/api/admin/users` | Admin |
-| POST | `/api/auth/logout` | Authenticated + CSRF |
-| POST | `/api/auth/forgot-password` | Public + CSRF |
-| POST | `/api/auth/reset-password` | Public + CSRF |
-| POST | `/api/auth/change-password` | Authenticated + CSRF |
-| PATCH | `/api/users/me` | Authenticated + CSRF |
-| GET | `/api/books`, `/api/books/{id}` | Public |
-| GET | `/api/stats`, `/api/categories` | Public |
-| POST/PUT/DELETE | `/api/books[/{id}]` | Owner or admin + CSRF |
-| POST | `/api/books/{id}/borrow` or `/return` | Owner or admin + CSRF |
-
-Book-changing routes return `404` for books a regular user does not own, including legacy unowned entries. Public catalogue responses include `is_owner` and `can_manage` flags for UI controls without exposing user IDs.
-
-## Security notes
-
-- JWTs are only set in HttpOnly cookies; passwords and access tokens are not stored in browser local storage.
-- Unsafe requests require a matching CSRF cookie/header and an allowed `Origin`. CORS credentials are enabled only for configured origins.
-- Local cookies use `SameSite=Lax` without `Secure`; production cookies use `Secure` and `SameSite=None` to support a separately hosted frontend/API. HTTPS is required in production.
-- Logout clears the browser cookie. Since access JWTs are stateless, a copied token can remain usable until its configured expiry; changing or resetting a password increments the user's token version and invalidates outstanding sessions.
-
-## Tests
-
-The backend tests use isolated in-memory SQLite databases; they do not connect to or alter the configured PostgreSQL database:
-
-```powershell
-cd backend
-pip install -r requirements-dev.txt
+Set-Location backend
+python -m pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-Frontend production build:
+Build the frontend:
 
 ```powershell
-cd frontend
+Set-Location frontend
+npm ci
 npm run build
 ```
+
+## Future improvements
+
+These are suggestions, not implemented features:
+
+- **Features:** Track individual loans, borrowers, due dates, and loan history instead of only a book's borrowed-copy count.
+- **User experience:** Add pagination for large catalogues and more search fields (search currently matches titles); align the Contact page's database wording and replace its placeholder-looking support address before a public release.
+- **Security:** Add rate limiting and operational monitoring for authentication and password-reset endpoints; document and exercise production cookie/HTTPS settings.
+- **Backend:** Use a versioned migration framework as the single schema-management mechanism and move statistics aggregation into database queries for larger catalogues.
+- **Frontend:** Add automated browser-level coverage for authentication, role-gated pages, and book-management flows.
+- **Deployment:** Provide a deployment guide and coordinated frontend/API/PostgreSQL orchestration; the repository currently defines only a backend Docker image.
