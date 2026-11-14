@@ -563,20 +563,7 @@ Use an appropriate data-fetching approach, such as `useEffect()` or a dedicated 
 
 ---
 
-## 14. Practical Exercises
-
-1. Create a counter component and observe how state updates cause re-renders.
-2. Create a component that mounts and unmounts using conditional rendering.
-3. Use `useEffect()` to log a message when a component mounts.
-4. Use a dependency array to observe how an effect responds to state changes.
-5. Create a timer using `setInterval()` and clean it up properly.
-6. Fetch transactions from your ExpenseTracker FastAPI backend.
-7. Add loading, success, and error states to the transaction component.
-8. Enable React Strict Mode and observe the extra development checks.
-
----
-
-## 15. Summary
+## 14. Summary
 
 React components generally go through three main stages:
 

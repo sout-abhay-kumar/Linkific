@@ -516,21 +516,7 @@ Your ExpenseTracker can use:
 
 ---
 
-## 11. Practice Exercises
-
-Try these exercises to understand JSON serialization.
-
-1. Create a Python dictionary containing your personal details and convert it into a JSON string.
-2. Convert a JSON string into a Python dictionary.
-3. Create a list of five expenses and serialize it.
-4. Save an expense dictionary into an `expenses.json` file.
-5. Read the `expenses.json` file and display all expenses.
-6. Create a FastAPI endpoint that returns a list of expenses as JSON.
-7. Send a JSON POST request from JavaScript to FastAPI.
-
----
-
-## 12. Summary
+## 11. Summary
 
 - JSON is a common format for exchanging structured data.
 - Serialization converts Python objects into JSON strings.
